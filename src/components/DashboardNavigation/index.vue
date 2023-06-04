@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, watch, shallowRef } from 'vue';
+import { computed, shallowRef } from 'vue';
 import { NavItemI } from './interfaces';
 
 // Navigation
@@ -35,7 +35,7 @@ const navItems: NavItemI[] = [{
 }]
 
 const prevSelectedItem = shallowRef<NavItemI| null>(null);
-const selectedItem = shallowRef<NavItemI>(navItems[0]);
+const selectedItem = shallowRef<NavItemI>(navItems[2]);
 const selectedItemHasDrawer = computed<boolean>((): boolean => !!selectedItem.value.component);
 const onSelectItem = (item: NavItemI): void => {
   prevSelectedItem.value = selectedItem.value;
@@ -82,7 +82,7 @@ const onSelectItem = (item: NavItemI): void => {
 
   <v-navigation-drawer
     width="256"
-    class="pa-5"
+    class="py-5"
     v-model="selectedItemHasDrawer"
   >
     <component :is="selectedItem.component ?? prevSelectedItem?.component" />
