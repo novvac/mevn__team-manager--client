@@ -1,5 +1,10 @@
 <script lang="ts" setup>
+import { computed, watch, shallowRef } from 'vue';
 import { NavItemI } from './interfaces';
+
+// Navigation
+import ProjectsTemplate from './templates/ProjectsTemplate.vue';
+import SettingsTemplate from './templates/SettingsTemplate.vue';
 
 const navItems: NavItemI[] = [{
   icon: 'view-dashboard-outline',
@@ -12,7 +17,8 @@ const navItems: NavItemI[] = [{
 }, {
   icon: 'folder-outline',
   title: 'Projects',
-  value: 'projects'
+  value: 'projects',
+  component: ProjectsTemplate
 }, {
   icon: 'bell-outline',
   title: 'Notifications',
@@ -24,12 +30,17 @@ const navItems: NavItemI[] = [{
 }, {
   icon: 'cog-outline',
   title: 'Settings',
-  value: 'settings'
-}, {
-  icon: 'logout',
-  title: 'Logout',
-  value: 'logout'
+  value: 'settings',
+  component: SettingsTemplate
 }]
+
+const prevSelectedItem = shallowRef<NavItemI| null>(null);
+const selectedItem = shallowRef<NavItemI>(navItems[0]);
+const selectedItemHasDrawer = computed<boolean>((): boolean => !!selectedItem.value.component);
+const onSelectItem = (item: NavItemI): void => {
+  prevSelectedItem.value = selectedItem.value;
+  selectedItem.value = item;
+}
 </script>
 
 <template>
@@ -56,6 +67,9 @@ const navItems: NavItemI[] = [{
             v-bind="props"
             :value="item.value"
             class="text-center"
+            :active="selectedItem.value === item.value"
+            color="primary"
+            @click="onSelectItem(item)"
           >
             <v-icon
               :icon="`mdi-${item.icon}`"
@@ -66,7 +80,11 @@ const navItems: NavItemI[] = [{
     </v-list>
   </v-navigation-drawer>
 
-  <v-navigation-drawer width="256">
-    items
+  <v-navigation-drawer
+    width="256"
+    class="pa-5"
+    v-model="selectedItemHasDrawer"
+  >
+    <component :is="selectedItem.component ?? prevSelectedItem?.component" />
   </v-navigation-drawer>
 </template>
